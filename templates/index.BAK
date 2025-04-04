@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ISBN変換アプリ</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      max-width: 1000px;
+      margin: auto;
+      padding: 2em;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 1em;
+    }
+
+    .container {
+      display: flex;
+      gap: 2em;
+    }
+
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 0.5em;
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 1em;
+      padding: 0.5em 1em;
+      font-family: inherit;
+      font-size: 14px;
+    }
+  </style>
+  <script>
+    function toggleMode() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      document.getElementById("input-form").style.display = mode === "input" ? "flex" : "none";
+      document.getElementById("upload-form").style.display = mode === "upload" ? "block" : "none";
+    }
+  </script>
+</head>
+<body onload="toggleMode()">
+
+  <h1>ISBN変換アプリ</h1>
+
+  <label><input type="radio" name="mode" value="input" onchange="toggleMode()" {{ 'checked' if mode == 'input' else '' }}> 📋 直接入力</label>
+  <label><input type="radio" name="mode" value="upload" onchange="toggleMode()" {{ 'checked' if mode == 'upload' else '' }}> 📁 ファイルアップロード</label>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  <!-- 横並びフォーム -->
+  <div class="container" id="input-form" style="margin-top: 1em;">
+    <!-- 入力フォーム -->
+    <form method="POST" class="panel">
+      <input type="hidden" name="mode" value="input">
+      <label>最大1000件まで。1行に1つの10桁ISBNを入力してください。</label>
+      <textarea name="input_text">{{ request.form.input_text }}</textarea>
+      <button type="submit">変換する</button>
+    </form>
+
+    <!-- 出力フォーム（常に表示） -->
+    <form method="POST" action="/download" class="panel" id="result-block">
+      <label>変換結果（13桁ISBN）</label>
+      <textarea readonly>
+{% if result %}
+{% for r in result %}
+{{ r[1] }}
+{% endfor %}
+{% endif %}
+      </textarea>
+      <input type="hidden" name="result_data" value="{% if result %}{{ result | map(attribute=1) | join('\n') }}{% endif %}">
+      <button type="submit">TXTとしてダウンロード</button>
+    </form>
+  </div>
+
+  <!-- ファイルアップロードフォーム -->
+  <form action="/upload" method="POST" enctype="multipart/form-data" id="upload-form" style="margin-top: 2em;">
+    <input type="hidden" name="mode" value="upload">
+    <input type="file" name="file">
+    <button type="submit">ファイルをアップロードして変換</button>
+  </form>
+
+</body>
+</html>
