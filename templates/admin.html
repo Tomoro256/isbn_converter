@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>管理画面</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+        }
+    </style>
+</head>
+<body>
+    <h1>変換履歴管理画面</h1>
+    <div id="spinner" class="spinner-border" role="status" style="display: none;">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <form method="GET" action="/download_csv">
+        <button type="submit" class="btn btn-primary">CSVダウンロード</button>
+    </form>
+    <form method="GET" action="/admin">
+        <div class="form-group">
+            <label for="startDate">開始日</label>
+            <input type="date" name="start_date" id="startDate" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="endDate">終了日</label>
+            <input type="date" name="end_date" id="endDate" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="filterUUID">UUIDで絞り込み</label>
+            <input type="text" name="filter_uuid" id="filterUUID" class="form-control" placeholder="UUIDを入力">
+        </div>
+        <div class="form-group">
+            <label for="excludeUUID">特定のUUID以外を表示</label>
+            <input type="text" name="exclude_uuid" id="excludeUUID" class="form-control" placeholder="除外するUUIDを入力">
+        </div>
+        <div class="form-group">
+            <label>管理者のUUIDを表示/非表示</label><br>
+            <input type="radio" name="show_admin" value="yes" id="showAdminYes">
+            <label for="showAdminYes">表示</label>
+            <input type="radio" name="show_admin" value="no" id="showAdminNo" checked>
+            <label for="showAdminNo">非表示</label>
+        </div>
+        <button type="submit" class="btn btn-secondary">絞り込み</button>
+    </form>
+    <form method="POST" action="/delete_filtered_logs">
+        <button type="submit" class="btn btn-danger">絞り込み結果を一括削除</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>UUID</th>
+                <th>ISBN10</th>
+                <th>ISBN13</th>
+                <th>Timestamp</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log[0] }}</td>
+                <td>{{ log[1] }}</td>
+                <td>{{ log[2] }}</td>
+                <td>{{ log[3] }}</td>
+                <td>{{ log[4] }}</td>
+                <td>
+                    <form method="POST" action="/delete_log">
+                        <input type="hidden" name="log_id" value="{{ log[0] }}">
+                        <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            document.getElementById('spinner').style.display = 'block';
+        });
+        window.onload = function() {
+            // 管理者のUUIDを非表示にする設定がデフォルトの場合、自動的にフォームを送信
+            if (document.getElementById('showAdminNo').checked) {
+                document.querySelector('form[action="/admin"]').submit();
+            }
+        };
+    </script>
+</body>
+</html>
