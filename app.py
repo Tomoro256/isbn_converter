@@ -6,6 +6,7 @@ import uuid
 import sqlite3
 from db import init_db, save_conversion_log
 from functools import wraps
+import os
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -86,6 +87,14 @@ def index():
         if logs:
             save_conversion_logs(logs)
 
+        # logs.dbを削除
+        try:
+            if os.path.exists('web/logs.db'):
+                os.remove('web/logs.db')
+                init_db()  # データベースを再初期化
+        except OSError as e:
+            flash(f"logs.dbの削除中にエラーが発生しました: {e}")
+
     # テンプレートをレンダリング
     return render_template("index.html", result=result, errors=errors, input_text=input_text)
 
@@ -151,12 +160,22 @@ def upload():
         output.write("\n".join(result))
         output.seek(0)
 
-        return send_file(
+        response = send_file(
             io.BytesIO(output.getvalue().encode("utf-8")),
             mimetype="text/plain",
             as_attachment=True,
             download_name=f"isbn_result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
         )
+
+        # logs.dbを削除し、再初期化
+        try:
+            if os.path.exists('web/logs.db'):
+                os.remove('web/logs.db')
+                init_db()  # データベースを再初期化
+        except OSError as e:
+            flash(f"logs.dbの削除中にエラーが発生しました: {e}")
+
+        return response
 
     except Exception as e:
         flash(f"アップロード処理中にエラーが発生しました: {e}")
