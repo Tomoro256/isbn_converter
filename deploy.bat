@@ -1,23 +1,23 @@
 @echo off
 title GitHub Release and Push Script
 
-REM ä¸è¦ãªãƒ•ã‚¡ã‚¤ãƒ«ã‚„ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å‰Šé™¤
+REM •s—v‚Èƒtƒ@ƒCƒ‹‚âƒfƒBƒŒƒNƒgƒŠ‚ğíœ
 echo Deleting unnecessary files and directories...
 if exist __pycache__ rmdir /s /q __pycache__
 if exist venv rmdir /s /q venv
 if exist app_data.db del /q app_data.db
 
-REM GitHubãƒªãƒã‚¸ãƒˆãƒªã®URL
+REM GitHubƒŠƒ|ƒWƒgƒŠ‚ÌURL
 set REPO_URL=https://github.com/Tomoro256/isbn_converter.git
 
-REM ãƒªãƒ¢ãƒ¼ãƒˆURLã®ç¢ºèª
+REM ƒŠƒ‚[ƒgURL‚ÌŠm”F
 echo Checking remote URL...
 git remote -v
 
-REM æœ€æ–°ã®ã‚¿ã‚°ã‚’å–å¾—
+REM ÅV‚Ìƒ^ƒO‚ğæ“¾
 for /f "delims=" %%i in ('git describe --tags --abbrev=0 2^>nul') do set LATEST_TAG=%%i
 
-REM ãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·ã‚’è‡ªå‹•ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
+REM ƒo[ƒWƒ‡ƒ“”Ô†‚ğ©“®ƒCƒ“ƒNƒŠƒƒ“ƒg
 if "%LATEST_TAG%"=="" (
     set VERSION=0.1.0
 ) else (
@@ -27,24 +27,28 @@ if "%LATEST_TAG%"=="" (
     )
 )
 
-REM GitHub CLIã§ã®ãƒªãƒªãƒ¼ã‚¹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+REM GitHub CLI‚Å‚ÌƒŠƒŠ[ƒXƒƒbƒZ[ƒW
 set RELEASE_MSG="Release version %VERSION%"
 
-REM Gitã®è¨­å®š
+REM Git‚Ìİ’è
 git add .
 git commit -m "Update for version %VERSION%"
+
+REM Šù‘¶‚Ìƒ^ƒO‚ğíœ‚µ‚ÄV‚µ‚¢ƒ^ƒO‚ğì¬
+git tag -d %VERSION%
+git push origin :refs/tags/%VERSION%
 git tag %VERSION%
 
-REM ãƒ–ãƒ©ãƒ³ãƒã®ãƒ—ãƒƒã‚·ãƒ¥
+REM ƒuƒ‰ƒ“ƒ`‚ÌƒvƒbƒVƒ…
 echo Pushing to remote repository...
-git push origin main
+git push origin master
 
-REM ã‚¿ã‚°ã®ãƒ—ãƒƒã‚·ãƒ¥
+REM ƒ^ƒO‚ÌƒvƒbƒVƒ…
 echo Pushing tags to remote repository...
 git push origin --tags
 
-REM GitHub CLIã‚’ä½¿ç”¨ã—ã¦æ–°ã—ã„ãƒªãƒªãƒ¼ã‚¹ã‚’ä½œæˆ
+REM GitHub CLI‚ğg—p‚µ‚ÄV‚µ‚¢ƒŠƒŠ[ƒX‚ğì¬
 gh release create %VERSION% --title "Version %VERSION%" --notes %RELEASE_MSG%
 
-echo ãƒªãƒªãƒ¼ã‚¹ %VERSION% ãŒä½œæˆã•ã‚Œã¾ã—ãŸã€‚
+echo ƒŠƒŠ[ƒX %VERSION% ‚ªì¬‚³‚ê‚Ü‚µ‚½B
 pause
