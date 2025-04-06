@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 title GitHub Release and Push Script
 
 REM 不要なファイルやディレクトリを削除
@@ -50,5 +51,5 @@ git push origin --tags
 REM GitHub CLIを使用して新しいリリースを作成
 gh release create %VERSION% --title "Version %VERSION%" --notes %RELEASE_MSG%
 
-echo リリース %VERSION% が作成されました。
+echo リリース %VERSION% が作成され、GitHubにプッシュされました。
 pause

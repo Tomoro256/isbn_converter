@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ISBN変換アプリ</title>
+  <title>ISBN変換</title>
   <!-- Bootstrap CSSの追加 -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
@@ -46,7 +46,7 @@
 </head>
 <body>
   <div class="container">
-    <h1 class="text-center">ISBN変換アプリ</h1>
+    <h1 class="text-center">ISBN変換（10桁ISBN → 13桁ISBN）</h1>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -72,7 +72,7 @@
       <div class="col-md-6">
         <form method="POST" action="/download" class="mb-4">
           <div class="form-group">
-            <label for="resultText">変換結果</label>
+            <label for="resultText">13桁ISBN変換結果</label>
             <textarea id="resultText" class="form-control" rows="4" readonly>{% if result %}{{ result | join('\n') }}{% endif %}</textarea>
           </div>
           <input type="hidden" name="result_data" value="{% if result %}{{ result | join('\n') }}{% endif %}">
@@ -85,7 +85,7 @@
 
     <form action="/upload" method="POST" enctype="multipart/form-data" class="mb-4">
       <div class="form-group">
-        <label for="fileUpload">ファイルアップロード（1000件以上もOK）</label>
+        <label for="fileUpload">ファイルアップロード（1行に1つ、1000件以上もOK）</label>
         <input type="file" name="file" id="fileUpload" class="form-control-file">
       </div>
       <button type="submit" class="btn btn-info btn-block">変換してTXTダウンロード</button>
