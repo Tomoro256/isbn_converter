@@ -16,6 +16,7 @@ echo Checking remote URL...
 git remote -v
 
 REM 最新のタグを取得
+set LATEST_TAG=
 for /f "delims=" %%i in ('git describe --tags --abbrev=0 2^>nul') do set LATEST_TAG=%%i
 
 REM バージョン番号を自動インクリメント
