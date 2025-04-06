@@ -33,7 +33,7 @@ set RELEASE_MSG="Release version %VERSION%"
 
 REM Gitの設定
 git add .
-git commit -m "Update for version %VERSION%"
+git commit --allow-empty -m "Update for version %VERSION%"
 
 REM 既存のタグを削除して新しいタグを作成
 git tag -d %VERSION%
