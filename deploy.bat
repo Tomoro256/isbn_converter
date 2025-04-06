@@ -10,6 +10,10 @@ if exist app_data.db del /q app_data.db
 REM GitHubリポジトリのURL
 set REPO_URL=https://github.com/Tomoro256/isbn_converter.git
 
+REM リモートURLの確認
+echo Checking remote URL...
+git remote -v
+
 REM 最新のタグを取得
 for /f "delims=" %%i in ('git describe --tags --abbrev=0 2^>nul') do set LATEST_TAG=%%i
 
@@ -30,7 +34,14 @@ REM Gitの設定
 git add .
 git commit -m "Update for version %VERSION%"
 git tag %VERSION%
-git push origin main --tags
+
+REM ブランチのプッシュ
+echo Pushing to remote repository...
+git push origin main
+
+REM タグのプッシュ
+echo Pushing tags to remote repository...
+git push origin --tags
 
 REM GitHub CLIを使用して新しいリリースを作成
 gh release create %VERSION% --title "Version %VERSION%" --notes %RELEASE_MSG%
