@@ -2,6 +2,9 @@
 setlocal enabledelayedexpansion
 title GitHub Release and Push Script
 
+REM ブラウザでリリースページを開く
+start https://github.com/Tomoro256/isbn_converter/releases
+
 REM 不要なファイルやディレクトリを削除
 echo Deleting unnecessary files and directories...
 if exist __pycache__ rmdir /s /q __pycache__
@@ -15,19 +18,8 @@ REM リモートURLの確認
 echo Checking remote URL...
 git remote -v
 
-REM 最新のタグを取得
-set LATEST_TAG=
-for /f "delims=" %%i in ('git describe --tags --abbrev=0 2^>nul') do set LATEST_TAG=%%i
-
-REM バージョン番号を自動インクリメント
-if "%LATEST_TAG%"=="" (
-    set VERSION=0.1.0
-) else (
-    for /f "tokens=1,2,3 delims=." %%a in ("%LATEST_TAG%") do (
-        set /a PATCH=%%c+1
-        set VERSION=%%a.%%b.!PATCH!
-    )
-)
+REM ユーザーにバージョン番号を入力させる
+set /p VERSION="バージョンを入力してください: "
 
 REM GitHub CLIでのリリースメッセージ
 set RELEASE_MSG="Release version %VERSION%"
